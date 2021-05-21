@@ -1,0 +1,78 @@
+show databases;
+use banking;
+show tables;
+create table Branch (branch_name varchar(20), 
+branch_city varchar(20), 
+assets real, 
+primary key(branch_name));
+create table Bankaccount (accno integer, 
+branch_name varchar(20), 
+balance real, 
+primary key(accno), 
+foreign key(branch_name) references BRANCH(branch_name)); 
+create table Bankcustomer(customer_name varchar(20), 
+customer_street varchar(20), 
+customer_city varchar(20),primary key(customer_name));
+create table Depositer (customer_name varchar(20), accno integer, 
+primary key(customer_name, accno), 
+foreign key(customer_name) references Bankcustomer(customer_name), 
+foreign key(accno) references Bankaccount(accno));
+create table Loan (loan_number int, 
+branch_name varchar(20), 
+amount real, 
+primary key(loan_number), 
+foreign key(branch_name) references Branch(branch_name)); 
+commit;
+insert into Branch values('SBI_Charajpet','Bangalore','50000');
+insert into Branch values('SBI_Residencyroad','Bangalore','10000');
+insert into Branch values('SBI_Shivajiroad','Mumbai','20000');
+insert into Branch values('SBI_Parlimentroad','Delhi','10000');
+insert into Branch values('SBI_Jantarmartar','Delhi','20000');
+commit;
+select * from Branch;
+insert into Loan values('2','SBI_Residencyroad','2000');
+insert into Loan values('1','SBI_Charajpet','1000');
+insert into Loan values('3','SBI_Shivajiroad','3000');
+insert into Loan values('4','SBI_Parlimentroad','4000');
+insert into Loan values('5','SBI_Jantarmartar','5000');
+commit;
+select * from Loan;
+insert into Bankaccount values(1,'SBI_Charajpet','2000');
+insert into Bankaccount values(2,'SBI_Parlimentroad','9000');
+insert into Bankaccount values(3,'SBI_Parlimentroad','4000');
+insert into Bankaccount values(4,'SBI_Shivajiroad','8000');
+insert into Bankaccount values(5,'SBI_Shivajiroad','5000');
+insert into Bankaccount values(6,'SBI_Shivajiroad','1000');
+insert into Bankaccount values(7,'SBI_Jantarmartar','3000');
+insert into Bankaccount values(8,'SBI_Residencyroad','7000');
+select * from Bankaccount;
+insert into Depositer values('Avinash','1');
+insert into Depositer values('Dinesh','2');
+insert into Depositer values('Nikil','3');
+insert into Depositer values('Ravi','4');
+insert into Depositer values('Avirath','5');
+insert into Depositer values('Ram','6');
+commit;
+insert into Bankcustomer values('Avinash','Bull_temple_Road','Bangalore');
+insert into Bankcustomer values('Dinesh','Bannergatta_Road','Bangalore');
+insert into Bankcustomer values('Nikil','Nationalcollege_Road','Bangalore');
+insert into Bankcustomer values('Ravi','Akbar_Road','Delhi');
+insert into Bankcustomer values('Avirath','Jp_nagar_Road','Bangalore');
+commit;
+select * from Bankcustomer;
+select C.customername from Bankcustomer C where exists(
+  select D.customername,count(D.customername)
+  from depositer D, BankaccountBA
+  where 
+      D.accno=BA.accno AND
+      C.customername=D.customername AND
+      BA.branchname='SBI_Residencyroad'
+  group by D.customername
+  having count(D.customername)>='2'
+  );
+  select BC.customername from Bankcustomer BC 
+  where not exists(select branchname from Branch where branchcity='Delhi'
+                   (select BA.branchname from Depositer D,BankAccount BA
+                   where D.accno=BA.accno and BC.customername=D.customername));
+delete from Bankaccount
+where brachname IN(select branch from branch where branchcity='Bombay');
