@@ -1,0 +1,42 @@
+show databases;
+use supplier;
+show tables;
+create table suppliers(sid_number(5) primary key, s_name varchar(20), city_name varchar(20));
+desc suppliers;
+create table parts(sid_number(20)primary key, p_name varchar(20),colour varchar(20));
+desc parts;
+create table catalog(sid_number(5), pid number(5),foreign key(sid) 
+references suppliers(s_id),foreign key(p_id) references parts(p_id), cost float(6), primary key(s_id, p_id));
+desc cataloge;
+commit;
+insert into suppliers values(10001, 'Acme Widget','Bangalore');
+insert into suppliers values(10002, 'Johns','Kolkata');
+insert into suppliers values(10003, 'Vimal','Mumbai');
+insert into suppliers values(10004, 'Reliance','Delhi');
+insert into suppliers values(10005, 'Mahindra','Mumbai');
+select * from suppliers;
+insert into parts values(20001, 'Book','Red');
+insert into parts values(20002, 'Pen','Red');
+insert into parts values(20003, 'Pencil','Green');
+insert into parts values(20004, 'Mobile','Green');
+insert into parts values(20005, 'Charger','Black');
+select * from parts;
+commit;
+insert into catalog values(10001, '20001','10');
+insert into catalog values(10001, '20002','10');
+insert into catalog values(10001, '20003','30');
+insert into catalog values(10001, '20004','10');
+insert into catalog values(10001, '20005','10');
+insert into catalog values(10002, '20001','10');
+insert into catalog values(10002, '20002','20');
+insert into catalog values(10003, '20003','30');
+insert into catalog values(10004, '20003','40');
+select * from catalog;
+select distinct P.pname from parts P, catalog C where P.pid = C.pid;
+select S.sname from supplier S, where not exists ((select P.pid  from Parts P) minus (select C.pid from Catalog C
+where C.sid = S.sid));
+select S.sname from Suppliers S where not exists (( select P.pid
+from Parts P
+where P.color = ‘Red’ )minus(select C.pid from catalog C, Parts P
+where C.sid = S.sid and
+C.pid = P.pid and P.color = ‘Red’ ));
